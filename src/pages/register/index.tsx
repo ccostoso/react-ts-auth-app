@@ -47,7 +47,10 @@ const RegisterPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const url = import.meta.env.VITE_API_BASE_URL + '/users/register';
+      const url =
+        import.meta.env.VITE_API_BASE_URL +
+        import.meta.env.VITE_REGISTER_ENDPOINT;
+
       const response = await axios.post(url, values);
       toast.success(response.data.message);
       form.reset();

@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
@@ -34,18 +34,22 @@ const LoginPage = () => {
       password: '',
     },
   });
+  const navigate = useNavigate();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log('Submitting login form with values:', values);
     try {
       setLoading(true);
-      const url = import.meta.env.VITE_API_BASE_URL + '/users/login';
+      const url =
+        import.meta.env.VITE_API_BASE_URL +
+        import.meta.env.VITE_LOG_IN_ENDPOINT;
       const response = await axios.post(url, values);
       toast.success(response.data.message);
-      console.log(response.data);
-      localStorage.setItem('token', response.data.data);
-      console.log(localStorage.getItem('token'));
-      form.reset();
+      const token = response.data.data;
+
+      localStorage.setItem('token', token);
+
+      // form.reset();
+      navigate('/');
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         toast.error(
