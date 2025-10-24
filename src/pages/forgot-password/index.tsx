@@ -16,6 +16,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
+import { SEND_PASSWORD_RESET_EMAIL_ENDPOINT } from '@/constants';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
@@ -34,9 +35,9 @@ const ForgotPasswordPage = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}${
-          import.meta.env.VITE_SEND_PASSWORD_RESET_EMAIL_ENDPOINT
-        }?email=${values.email}`,
+        `${
+          import.meta.env.VITE_API_BASE_URL
+        }${SEND_PASSWORD_RESET_EMAIL_ENDPOINT}?email=${values.email}`,
         values
       );
       toast.success(response.data.message);

@@ -1,3 +1,4 @@
+import { VERIFY_EMAIL_ENDPOINT } from '@/constants';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 
@@ -13,9 +14,9 @@ const VerifyEmailPage = () => {
       try {
         setLoading(true);
         const response = await axios.post(
-          `${import.meta.env.VITE_API_BASE_URL}${
-            import.meta.env.VITE_VERIFY_EMAIL_ENDPOINT
-          }?token=${token}`
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }${VERIFY_EMAIL_ENDPOINT}?token=${token}`
         );
         setSuccess(true);
         setMessage(response.data.message);

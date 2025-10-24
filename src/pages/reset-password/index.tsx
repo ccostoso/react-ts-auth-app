@@ -16,6 +16,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
+import { RESET_PASSWORD_ENDPOINT } from '@/constants';
 
 const formSchema = z.object({
   password: z
@@ -49,9 +50,7 @@ const ResetPasswordPage = () => {
         return;
       }
       const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}${
-          import.meta.env.VITE_RESET_PASSWORD_ENDPOINT
-        }`,
+        `${import.meta.env.VITE_API_BASE_URL}${RESET_PASSWORD_ENDPOINT}`,
         { newPassword: values.password, token }
       );
       toast.success(response.data.message);

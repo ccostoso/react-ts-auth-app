@@ -18,6 +18,7 @@ import { Link, useNavigate } from 'react-router-dom';
 
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { REGISTER_ENDPOINT } from '@/constants';
 
 const formSchema = z.object({
   name: z
@@ -47,9 +48,7 @@ const RegisterPage = () => {
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
       setLoading(true);
-      const url =
-        import.meta.env.VITE_API_BASE_URL +
-        import.meta.env.VITE_REGISTER_ENDPOINT;
+      const url = import.meta.env.VITE_API_BASE_URL + REGISTER_ENDPOINT;
 
       const response = await axios.post(url, values);
       toast.success(response.data.message);

@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { GET_LOGGED_IN_USER_ENDPOINT } from '@/constants';
 import type { IUser } from '@/interfaces';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
@@ -15,8 +16,7 @@ const Homepage = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       const url =
-        import.meta.env.VITE_API_BASE_URL +
-        import.meta.env.VITE_GET_LOGGED_IN_USER_ENDPOINT;
+        import.meta.env.VITE_API_BASE_URL + GET_LOGGED_IN_USER_ENDPOINT;
       const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
