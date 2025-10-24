@@ -12,7 +12,10 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
 
 const formSchema = z.object({
   password: z
@@ -26,6 +29,10 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 const ResetPasswordPage = () => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const navigate = useNavigate();
+  const token = searchParams.get('token');
+  const [loading, setLoading] = useState(false);
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,9 +41,38 @@ const ResetPasswordPage = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setLoading(true);
+      if (values.password !== values.confirmPassword) {
+        toast.error('Passwords do not match.');
+        return;
+      }
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}${
+          import.meta.env.VITE_RESET_PASSWORD_ENDPOINT
+        }`,
+        { newPassword: values.password, token }
+      );
+      toast.success(response.data.message);
+      form.reset();
+      navigate('/login');
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        toast.error(
+          e.response?.data?.message ||
+            e.message ||
+            'An unexpected error occurred'
+        );
+      } else if (e instanceof Error) {
+        toast.error(e.message);
+      } else {
+        toast.error('An unexpected error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="flex justify-center items-center h-screen">
@@ -71,7 +107,7 @@ const ResetPasswordPage = () => {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button className="w-full" type="submit" disabled={loading}>
               Reset
             </Button>
             <h1 className="text-sm">

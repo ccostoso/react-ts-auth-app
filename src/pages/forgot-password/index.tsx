@@ -13,12 +13,16 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
+import { useState } from 'react';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),
 });
 
 const ForgotPasswordPage = () => {
+  const [loading, setLoading] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -26,9 +30,33 @@ const ForgotPasswordPage = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setLoading(true);
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}${
+          import.meta.env.VITE_SEND_PASSWORD_RESET_EMAIL_ENDPOINT
+        }?email=${values.email}`,
+        values
+      );
+      toast.success(response.data.message);
+      form.reset();
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        toast.error(
+          e.response?.data?.message ||
+            e.message ||
+            'An unexpected error occurred'
+        );
+      } else if (e instanceof Error) {
+        toast.error(e.message);
+      } else {
+        toast.error('An unexpected error occurred');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="flex justify-center items-center h-screen">
@@ -52,7 +80,7 @@ const ForgotPasswordPage = () => {
                 </FormItem>
               )}
             />
-            <Button className="w-full" type="submit">
+            <Button className="w-full" type="submit" disabled={loading}>
               Send reset link
             </Button>
             <h1 className="text-sm">
